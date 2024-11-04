@@ -1,564 +1,566 @@
-<div id="chat-widget-wrapper" style="width: 100%; height: 700px; background: #333333; margin: 20px 0; border-radius: 24px; padding: 20px; display: flex; gap: 20px;">
-    <div id="chat-widget" style="flex: 1; background: #d9d9d9; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
-        <style>
-            .chat-container {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                background: #d9d9d9;
-            }
-
-            .chat-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                padding: 1.25rem;
-                background: rgba(0, 0, 0, 0.05);
-                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            }
-
-            .chat-header-title {
-                color: #333;
-                font-size: 1.15rem;
-                font-weight: 600;
-                letter-spacing: 0.3px;
-            }
-
-            .messages-area {
-                flex: 1;
-                overflow-y: auto;
-                padding: 1.25rem;
-                scroll-behavior: smooth;
-                background: transparent;
-            }
-
-            .messages-area::-webkit-scrollbar {
-                width: 6px;
-            }
-
-            .messages-area::-webkit-scrollbar-track {
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 3px;
-            }
-
-            .messages-area::-webkit-scrollbar-thumb {
-                background: rgba(0, 0, 0, 0.2);
-                border-radius: 3px;
-            }
-
-            .message {
-                padding: 1rem;
-                border-radius: 12px;
-                margin-bottom: 1rem;
-                max-width: 80%;
-                word-wrap: break-word;
-                animation: fadeIn 0.3s ease-in;
-                position: relative;
-                line-height: 1.5;
-                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; transform: translateY(8px); }
-                to { opacity: 1; transform: translateY(0); }
-            }
-
-            .message.user {
-                background: linear-gradient(145deg, #2c2c2c, #333333);
-                margin-left: auto;
-                color: #fff;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-            }
-
-            .message.ai {
-                background: linear-gradient(145deg, #0ABE76, #09a868);
-                color: white;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-
-            .message .timestamp {
-                font-size: 0.75rem;
-                opacity: 0.7;
-                position: absolute;
-                bottom: -1.4rem;
-                right: 0.5rem;
-                color: #666;
-            }
-
-            .input-area {
-                padding: 1.25rem;
-                display: flex;
-                gap: 0.75rem;
-                background: rgba(0, 0, 0, 0.05);
-                border-top: 1px solid rgba(0, 0, 0, 0.1);
-            }
-
-            .message-input {
-                flex: 1;
-                padding: 1rem 1.25rem;
-                border-radius: 12px;
-                background: white;
-                color: #333;
-                border: 1px solid rgba(0, 0, 0, 0.1);
-                font-size: 0.95rem;
-                resize: none;
-                min-height: 48px;
-                max-height: 120px;
-                transition: all 0.2s ease;
-            }
-
-            .message-input:focus {
-                outline: none;
-                border-color: #0ABE76;
-                box-shadow: 0 0 0 2px rgba(10, 190, 118, 0.1);
-            }
-
-            .message-input::placeholder {
-                color: #666;
-            }
-
-            .send-button {
-                padding: 0 1.5rem;
-                background: linear-gradient(145deg, #0ABE76, #09a868);
-                border: none;
-                border-radius: 12px;
-                color: white;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                align-items: center;
-                gap: 0.5rem;
-                font-weight: 500;
-                box-shadow: 0 2px 8px rgba(10, 190, 118, 0.2);
-            }
-
-            .send-button:hover:not(:disabled) {
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(10, 190, 118, 0.3);
-            }
-
-            .send-button:disabled {
-                background: linear-gradient(145deg, #ccc, #d4d4d4);
-                cursor: not-allowed;
-                box-shadow: none;
-                color: #666;
-            }
-
-            .clear-chat {
-                background: white;
-                border: 1px solid rgba(0, 0, 0, 0.1);
-                color: #666;
-                cursor: pointer;
-                font-size: 0.9rem;
-                display: flex;
-                align-items: center;
-                gap: 0.4rem;
-                padding: 0.5rem 0.75rem;
-                border-radius: 8px;
-                transition: all 0.2s ease;
-            }
-
-            .clear-chat:hover {
-                background: rgba(0, 0, 0, 0.05);
-                color: #333;
-                transform: translateY(-1px);
-            }
-
-            .agents-container {
-                width: 280px;
-                background: #d9d9d9;
-                border-radius: 16px;
-                padding: 1.25rem;
-                display: flex;
-                flex-direction: column;
-            }
-
-            .agents-title {
-                font-size: 1.15rem;
-                margin-bottom: 1.25rem;
-                color: #333;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                gap: 0.75rem;
-                letter-spacing: 0.3px;
-            }
-
-            .agents-title .agent-count {
-                font-size: 0.8rem;
-                background: rgba(0, 0, 0, 0.1);
-                padding: 0.3rem 0.8rem;
-                border-radius: 1rem;
-                font-weight: normal;
-                color: #666;
-            }
-
-            #agentsList {
-                display: flex;
-                flex-direction: column;
-                gap: 0.75rem;
-            }
-
-            .agent-button {
-                width: 100%;
-                padding: 1.25rem;
-                background: white;
-                border: 1px solid rgba(0, 0, 0, 0.1);
-                border-radius: 12px;
-                color: #333;
-                text-align: left;
-                cursor: pointer;
-                transition: all 0.2s ease;
-                display: flex;
-                flex-direction: column;
-                gap: 0.4rem;
-            }
-
-            .agent-button .agent-name {
-                font-weight: 600;
-                font-size: 1rem;
-                letter-spacing: 0.3px;
-            }
-
-            .agent-button .agent-status {
-                font-size: 0.85rem;
-                color: #666;
-            }
-
-            .agent-button:hover {
-                background: rgba(255, 255, 255, 0.9);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            }
-
-            .agent-button.selected {
-                background: linear-gradient(145deg, #0ABE76, #09a868);
-                border-color: rgba(255, 255, 255, 0.1);
-                box-shadow: 0 4px 16px rgba(10, 190, 118, 0.25);
-                color: white;
-            }
-
-            .agent-button.selected .agent-status {
-                color: rgba(255, 255, 255, 0.8);
-            }
-
-            .typing-indicator {
-                display: inline-flex;
-                align-items: center;
-                gap: 0.5rem;
-                padding: 0.75rem 1.25rem;
-                background: white;
-                border: 1px solid rgba(0, 0, 0, 0.1);
-                border-radius: 12px;
-                margin-bottom: 1rem;
-                color: #666;
-                font-size: 0.9rem;
-                animation: fadeIn 0.3s ease-in;
-            }
-
-            .typing-indicator .dots {
-                display: flex;
-                gap: 0.3rem;
-            }
-
-            .typing-indicator .dot {
-                width: 5px;
-                height: 5px;
-                background: #666;
-                border-radius: 50%;
-                animation: bounce 1.4s infinite;
-            }
-
-            .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
-            .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
-
-            @keyframes bounce {
-                0%, 60%, 100% { transform: translateY(0); }
-                30% { transform: translateY(-4px); }
-            }
-
-            @media (max-width: 768px) {
-                #chat-widget-wrapper {
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget</title>
+</head>
+<body>
+    <div id="chat-widget-wrapper" style="width: 100%; height: 700px; background: #333333; margin: 0; border-radius: 24px; padding: 10px; display: flex; gap: 20px;">
+        <div id="chat-widget" style="flex: 1; background: #d9d9d9; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
+            <style>
+                .chat-container {
+                    flex: 1;
+                    display: flex;
                     flex-direction: column;
-                    height: 800px;
-                    padding: 15px;
-                }
-                
-                .agents-container {
-                    width: 100%;
-                    height: auto;
+                    background: #d9d9d9;
                 }
 
-                .agent-button {
-                    padding: 1rem;
+                .chat-header {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 1.25rem;
+                    background: rgba(0, 0, 0, 0.05);
+                    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
                 }
-                
+
+                .chat-header-title {
+                    color: #333;
+                    font-size: 1.15rem;
+                    font-weight: 600;
+                    letter-spacing: 0.3px;
+                }
+
+                .messages-area {
+                    flex: 1;
+                    overflow-y: auto;
+                    padding: 1.25rem;
+                    scroll-behavior: smooth;
+                    background: transparent;
+                }
+
+                .messages-area::-webkit-scrollbar {
+                    width: 6px;
+                }
+
+                .messages-area::-webkit-scrollbar-track {
+                    background: rgba(0, 0, 0, 0.05);
+                    border-radius: 3px;
+                }
+
+                .messages-area::-webkit-scrollbar-thumb {
+                    background: rgba(0, 0, 0, 0.2);
+                    border-radius: 3px;
+                }
+
                 .message {
-                    max-width: 90%;
+                    padding: 1rem;
+                    border-radius: 12px;
+                    margin-bottom: 1rem;
+                    max-width: 80%;
+                    word-wrap: break-word;
+                    animation: fadeIn 0.3s ease-in;
+                    position: relative;
+                    line-height: 1.5;
+                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+                }
+
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(8px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+
+                .message.user {
+                    background: linear-gradient(145deg, #2c2c2c, #333333);
+                    margin-left: auto;
+                    color: #fff;
+                    border: 1px solid rgba(255, 255, 255, 0.05);
+                }
+
+                .message.ai {
+                    background: linear-gradient(145deg, #0ABE76, #09a868);
+                    color: white;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+                }
+
+                .message .timestamp {
+                    font-size: 0.75rem;
+                    opacity: 0.7;
+                    position: absolute;
+                    bottom: -1.4rem;
+                    right: 0.5rem;
+                    color: #666;
                 }
 
                 .input-area {
-                    padding: 1rem;
+                    padding: 1.25rem;
+                    display: flex;
+                    gap: 0.75rem;
+                    background: rgba(0, 0, 0, 0.05);
+                    border-top: 1px solid rgba(0, 0, 0, 0.1);
                 }
 
                 .message-input {
-                    padding: 0.875rem 1rem;
-                }
-            }
-        </style>
-
-        <div class="chat-container">
-            <div class="chat-header">
-                <div class="chat-header-title">Dein KI-Team</div>
-                <button id="clearChat" class="clear-chat">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                    </svg>
-                    Clear chat
-                </button>
-            </div>
-            <div id="messages" class="messages-area"></div>
-            <div class="input-area">
-                <textarea id="messageInput" class="message-input" placeholder="Select an AI Agent to start" disabled rows="1"></textarea>
-                <button id="sendButton" class="send-button" disabled>
-                    <span>Send</span>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                    </svg>
-                </button>
-            </div>
-        </div>
-    </div>
-
-    <div class="agents-container">
-        <h2 class="agents-title">
-            AI Agents
-            <span class="agent-count">3 available</span>
-        </h2>
-        <div id="agentsList"></div>
-    </div>
-
-    <script>
-        const agents = [
-            { 
-                id: 1, 
-                name: 'Blog Writer AI',
-                status: 'Ready to write',
-                webhook: 'https://hook.eu2.make.com/iy273oeypksywkplaokk69ygiwu2t64v'
-            },
-            { 
-                id: 2, 
-                name: 'Accountant AI',
-                status: 'Available for consultation',
-                webhook: 'https://hook.eu2.make.com/e2scognmtp7rq6qdgqqe9kwzblmjlnos'
-            },
-            { 
-                id: 3, 
-                name: 'Consultant AI',
-                status: 'Ready to assist',
-                webhook: 'https://hook.eu2.make.com/iy273oeypksywkplaokk69ygiwu2t64v'
-            }
-        ];
-
-        let selectedAgent = null;
-        let isSending = false;
-        const messagesDiv = document.getElementById('messages');
-        const messageInput = document.getElementById('messageInput');
-        const sendButton = document.getElementById('sendButton');
-        const agentsList = document.getElementById('agentsList');
-        const clearChatButton = document.getElementById('clearChat');
-
-        // Create agent buttons
-        agents.forEach(agent => {
-            const button = document.createElement('button');
-            button.className = 'agent-button';
-            button.innerHTML = `
-                <span class="agent-name">${agent.name}</span>
-                <span class="agent-status">${agent.status}</span>
-            `;
-            button.onclick = () => selectAgent(agent, button);
-            agentsList.appendChild(button);
-        });
-
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
-
-        // Try to load saved messages
-        const savedMessages = localStorage.getItem('chatMessages');
-        if (savedMessages) {
-            const messages = JSON.parse(savedMessages);
-            messages.forEach(msg => addMessage(msg.text, msg.sender, msg.timestamp, false));
-        }
-
-        function selectAgent(agent, button) {
-            selectedAgent = agent;
-            document.querySelectorAll('.agent-button').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            button.classList.add('selected');
-            messageInput.disabled = false;
-            sendButton.disabled = false;
-            messageInput.placeholder = `Chat with ${agent.name}...`;
-            messageInput.focus();
-        }
-
-        function showTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.innerHTML = `
-                ${selectedAgent.name} is typing
-                <div class="dots">
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                    <div class="dot"></div>
-                </div>
-            `;
-            messagesDiv.appendChild(indicator);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
-            return indicator;
-        }
-
-        function setSendingState(sending) {
-            isSending = sending;
-            messageInput.disabled = sending;
-            sendButton.disabled = sending;
-            if (sending) {
-                messageInput.classList.add('sending');
-                sendButton.classList.add('sending');
-            } else {
-                messageInput.classList.remove('sending');
-                sendButton.classList.remove('sending');
-            }
-        }
-
-        async function sendMessage() {
-            const message = messageInput.value.trim();
-            if (!message || !selectedAgent || isSending) return;
-
-            setSendingState(true);
-            addMessage(message, 'user');
-            messageInput.value = '';
-            messageInput.style.height = 'auto';
-
-            const typingIndicator = showTypingIndicator();
-
-            try {
-                // Get all messages from localStorage to create conversation history
-                const chatHistory = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-                
-                // Format the conversation history for the AI
-                const formattedHistory = chatHistory.map(msg => ({
-                    role: msg.sender === 'user' ? 'user' : 'assistant',
-                    content: msg.text,
-                    timestamp: msg.timestamp
-                }));
-
-                const payload = {
-                    message: message,
-                    agentName: selectedAgent.name,
-                    conversationHistory: formattedHistory
-                };
-
-                // Log the payload for debugging
-                console.log('Sending payload to webhook:', payload);
-
-                const response = await fetch(selectedAgent.webhook, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    throw new Error('Webhook call failed');
+                    flex: 1;
+                    padding: 1rem 1.25rem;
+                    border-radius: 12px;
+                    background: white;
+                    color: #333;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    font-size: 0.95rem;
+                    resize: none;
+                    min-height: 48px;
+                    max-height: 120px;
+                    transition: all 0.2s ease;
                 }
 
-                // Handle the AI response
-                const responseData = await response.json();
-                
-                // Remove typing indicator after a short delay
-                setTimeout(() => {
-                    typingIndicator.remove();
-                    
-                    // Add the AI's response to the chat
-                    if (responseData && responseData.response) {
-                        addMessage(responseData.response, 'ai');
-                    } else {
-                        addMessage('Message sent successfully, but no response received.', 'ai');
-                    }
-                }, 1500);
+                .message-input:focus {
+                    outline: none;
+                    border-color: #0ABE76;
+                    box-shadow: 0 0 0 2px rgba(10, 190, 118, 0.1);
+                }
 
-            } catch (error) {
-                console.error('Error:', error);
-                typingIndicator.remove();
-                addMessage('Sorry, there was an error processing your message.', 'ai');
-            } finally {
-                setSendingState(false);
-            }
-        }
+                .message-input::placeholder {
+                    color: #666;
+                }
 
-        function formatTimestamp(timestamp) {
-            const date = new Date(timestamp);
-            return date.toLocaleTimeString(undefined, { 
-                hour: '2-digit', 
-                minute: '2-digit'
-            });
-        }
+                .send-button {
+                    padding: 0 1.5rem;
+                    background: linear-gradient(145deg, #0ABE76, #09a868);
+                    border: none;
+                    border-radius: 12px;
+                    color: white;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    font-weight: 500;
+                    box-shadow: 0 2px 8px rgba(10, 190, 118, 0.2);
+                }
 
-        function addMessage(text, sender, timestamp = Date.now(), save = true) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}`;
-            messageDiv.innerHTML = `
-                ${text}
-                <div class="timestamp">${formatTimestamp(timestamp)}</div>
-            `;
-            messagesDiv.appendChild(messageDiv);
-            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                .send-button:hover:not(:disabled) {
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(10, 190, 118, 0.3);
+                }
 
-            if (save) {
-                // Save messages to localStorage with role information
-                const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
-                messages.push({
-                    text,
-                    sender,
-                    timestamp,
-                    role: sender === 'user' ? 'user' : 'assistant'
-                });
-                localStorage.setItem('chatMessages', JSON.stringify(messages));
-            }
-        }
+                .send-button:disabled {
+                    background: linear-gradient(145deg, #ccc, #d4d4d4);
+                    cursor: not-allowed;
+                    box-shadow: none;
+                    color: #666;
+                }
 
-        function clearChat() {
-            messagesDiv.innerHTML = '';
-            localStorage.removeItem('chatMessages');
-        }
+                .clear-chat {
+                    background: white;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    color: #666;
+                    cursor: pointer;
+                    font-size: 0.9rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.4rem;
+                    padding: 0.5rem 0.75rem;
+                    border-radius: 8px;
+                    transition: all 0.2s ease;
+                }
 
-        // Event listeners
-        sendButton.onclick = sendMessage;
-        messageInput.onkeypress = (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
-            }
-        };
-        clearChatButton.onclick = clearChat;
-    </script>
-    <script>
-    // Function to calculate and send the height of the content to the parent iframe
-    function resizeIframe() {
-        // Sends a message to the parent iframe with the height of the document content
-        window.parent.postMessage(
-            { iframeHeight: document.documentElement.scrollHeight },
-            '*'
-        );
+                .clear-chat:hover {
+                    background: rgba(0, 0, 0, 0.05);
+                    color: #333;
+                    transform: translateY(-1px);
+                }
+
+                .agents-container {
+                    width: 250px;
+                    min-width: 200px;
+                    background: #d9d9d9;
+                    border-radius: 16px;
+                    padding: 1rem;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .agents-title {
+                    font-size: 1.15rem;
+                    margin-bottom: 1.25rem;
+                    color: #333;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                    letter-spacing: 0.3px;
+                }
+
+                .agents-title .agent-count {
+                    font-size: 0.8rem;
+                    background: rgba(0, 0, 0, 0.1);
+                    padding: 0.3rem 0.8rem;
+                    border-radius: 1rem;
+                    font-weight: normal;
+                    color: #666;
+                }
+
+                #agentsList {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.75rem;
+                }
+
+                .agent-button {
+                    width: 100%;
+                    padding: 1.25rem;
+                    background: white;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border-radius: 12px;
+                    color: #333;
+                    text-align: left;
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.4rem;
+                }
+
+                .agent-button .agent-name {
+                    font-weight: 600;
+                    font-size: 1rem;
+                    letter-spacing: 0.3px;
+                }
+
+                .agent-button .agent-status {
+                    font-size: 0.85rem;
+                    color: #666;
+                }
+
+                .agent-button:hover {
+                    background: rgba(255, 255, 255, 0.9);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                }
+
+                .agent-button.selected {
+                    background: linear-gradient(145deg, #0ABE76, #09a868);
+                    border-color: rgba(255, 255, 255, 0.1);
+                    box-shadow: 0 4px 16px rgba(10, 190, 118, 0.25);
+                    color: white;
+                }
+
+                .agent-button.selected .agent-status {
+                    color: rgba(255, 255, 255, 0.8);
+                }
+
+                .typing-indicator {
+                    display: inline-flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                    padding: 0.75rem 1.25rem;
+                    background: white;
+                    border: 1px solid rgba(0, 0, 0, 0.1);
+                    border-radius: 12px;
+                    margin-bottom: 1rem;
+                    color: #666;
+                    font-size: 0.9rem;
+                    animation: fadeIn 0.3s ease-in;
+                }
+
+                .typing-indicator .dots {
+                    display: flex;
+                    gap: 0.3rem;
+                }
+
+                .typing-indicator .dot {
+                    width: 5px;
+                    height: 5px;
+                    background: #666;
+                    border-radius: 50%;
+                    animation: bounce 1.4s infinite;
+                }
+
+                .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+                .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+
+                @keyframes bounce {
+                    0%, 60%, 100% { transform: translateY(0); }
+                    30% { transform: translateY(-4px); }
+                }
+
+                @media (max-width: 900px) {
+    #chat-widget-wrapper {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+        margin: 0;
+        width: 95%;
+    }
+    
+    .agents-container {
+        width: 100%;
+        height: auto;
+        padding: 0.75rem;
     }
 
-    // Trigger the resize function when the page loads or is resized
-    window.onload = resizeIframe;
-    window.onresize = resizeIframe;
-</script>
+    #chat-widget {
+        width: 100%;
+    }
+}
+            </style>
+
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-header-title">Dein KI-Team</div>
+                    <button id="clearChat" class="clear-chat">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+                        </svg>
+                        Clear chat
+                    </button>
+                </div>
+                <div id="messages" class="messages-area"></div>
+                <div class="input-area">
+                    <textarea id="messageInput" class="message-input" placeholder="Select an AI Agent to start" disabled rows="1"></textarea>
+                    <button id="sendButton" class="send-button" disabled>
+                        <span>Send</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="agents-container">
+            <h2 class="agents-title">
+                AI Agents
+                <span class="agent-count">3 available</span>
+            </h2>
+            <div id="agentsList"></div>
+        </div>
+
+        <script>
+            const agents = [
+                { 
+                    id: 1, 
+                    name: 'Blog Writer AI',
+                    status: 'Ready to write',
+                    webhook: 'https://hook.eu2.make.com/iy273oeypksywkplaokk69ygiwu2t64v'
+                },
+                { 
+                    id: 2, 
+                    name: 'Accountant AI',
+                    status: 'Available for consultation',
+                    webhook: 'https://hook.eu2.make.com/e2scognmtp7rq6qdgqqe9kwzblmjlnos'
+                },
+                { 
+                    id: 3, 
+                    name: 'Consultant AI',
+                    status: 'Ready to assist',
+                    webhook: 'WEBHOOK_URL_HERE'
+                }
+            ];
+
+            let selectedAgent = null;
+            let isSending = false;
+            const messagesDiv = document.getElementById('messages');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const agentsList = document.getElementById('agentsList');
+            const clearChatButton = document.getElementById('clearChat');
+
+            // Create agent buttons
+            agents.forEach(agent => {
+                const button = document.createElement('button');
+                button.className = 'agent-button';
+                button.innerHTML = `
+                    <span class="agent-name">${agent.name}</span>
+                    <span class="agent-status">${agent.status}</span>
+                `;
+                button.onclick = () => selectAgent(agent, button);
+                agentsList.appendChild(button);
+            });
+
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Try to load saved messages
+            const savedMessages = localStorage.getItem('chatMessages');
+            if (savedMessages) {
+                const messages = JSON.parse(savedMessages);
+                messages.forEach(msg => addMessage(msg.text, msg.sender, msg.timestamp, false));
+            }
+
+            function selectAgent(agent, button) {
+                selectedAgent = agent;
+                document.querySelectorAll('.agent-button').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                button.classList.add('selected');
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.placeholder = `Chat with ${agent.name}...`;
+                messageInput.focus();
+            }
+
+            function showTypingIndicator() {
+                const indicator = document.createElement('div');
+                indicator.className = 'typing-indicator';
+                indicator.innerHTML = `
+                    ${selectedAgent.name} is typing
+                    <div class="dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
+                `;
+                messagesDiv.appendChild(indicator);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                return indicator;
+            }
+
+            function setSendingState(sending) {
+                isSending = sending;
+                messageInput.disabled = sending;
+                sendButton.disabled = sending;
+                if (sending) {
+                    messageInput.classList.add('sending');
+                    sendButton.classList.add('sending');
+                } else {
+                    messageInput.classList.remove('sending');
+                    sendButton.classList.remove('sending');
+                }
+            }
+
+            async function sendMessage() {
+                const message = messageInput.value.trim();
+                if (!message || !selectedAgent || isSending) return;
+
+                setSendingState(true);
+                addMessage(message, 'user');
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+
+                const typingIndicator = showTypingIndicator();
+
+                try {
+                    // Get all messages from localStorage to create conversation history
+                    const chatHistory = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+                    
+                    // Format the conversation history for the AI
+                    const formattedHistory = chatHistory.map(msg => ({
+                        role: msg.sender === 'user' ? 'user' : 'assistant',
+                        content: msg.text,
+                        timestamp: msg.timestamp
+                    }));
+
+                    const payload = {
+                        message: message,
+                        agentName: selectedAgent.name,
+                        conversationHistory: formattedHistory
+                    };
+
+                    // Log the payload for debugging
+                    console.log('Sending payload to webhook:', payload);
+
+                    const response = await fetch(selectedAgent.webhook, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Webhook call failed');
+                    }
+
+                    // Handle the AI response
+                    const responseData = await response.json();
+                    
+                    // Remove typing indicator after a short delay
+                    setTimeout(() => {
+                        typingIndicator.remove();
+                        
+                        // Add the AI's response to the chat
+                        if (responseData && responseData.response) {
+                            addMessage(responseData.response, 'ai');
+                        } else {
+                            addMessage('Message sent successfully, but no response received.', 'ai');
+                        }
+                    }, 1500);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    typingIndicator.remove();
+                    addMessage('Sorry, there was an error processing your message.', 'ai');
+                } finally {
+                    setSendingState(false);
+                }
+            }
+
+            function formatTimestamp(timestamp) {
+                const date = new Date(timestamp);
+                return date.toLocaleTimeString(undefined, { 
+                    hour: '2-digit', 
+                    minute: '2-digit'
+                });
+            }
+
+            function addMessage(text, sender, timestamp = Date.now(), save = true) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${sender}`;
+                messageDiv.innerHTML = `
+                    ${text}
+                    <div class="timestamp">${formatTimestamp(timestamp)}</div>
+                `;
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+                if (save) {
+                    // Save messages to localStorage with role information
+                    const messages = JSON.parse(localStorage.getItem('chatMessages') || '[]');
+                    messages.push({
+                        text,
+                        sender,
+                        timestamp,
+                        role: sender === 'user' ? 'user' : 'assistant'
+                    });
+                    localStorage.setItem('chatMessages', JSON.stringify(messages));
+                }
+            }
+
+            function clearChat() {
+                messagesDiv.innerHTML = '';
+                localStorage.removeItem('chatMessages');
+            }
+
+            // Event listeners
+            sendButton.onclick = sendMessage;
+            messageInput.onkeypress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            };
+            clearChatButton.onclick = clearChat;
+        </script>
+        <script>
+        // Function to calculate and send the height of the content to the parent iframe
+        function resizeIframe() {
+            // Sends a message to the parent iframe with the height of the document content
+            window.parent.postMessage(
+                { iframeHeight: document.documentElement.scrollHeight },
+                '*'
+            );
+        }
+
+        // Trigger the resize function when the page loads or is resized
+        window.onload = resizeIframe;
+        window.onresize = resizeIframe;
+    </script>
 </div>
+</body>
+</html>
