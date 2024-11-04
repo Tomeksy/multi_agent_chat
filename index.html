@@ -547,4 +547,18 @@
         };
         clearChatButton.onclick = clearChat;
     </script>
+    <script>
+    // Function to calculate and send the height of the content to the parent iframe
+    function resizeIframe() {
+        // Sends a message to the parent iframe with the height of the document content
+        window.parent.postMessage(
+            { iframeHeight: document.documentElement.scrollHeight },
+            '*'
+        );
+    }
+
+    // Trigger the resize function when the page loads or is resized
+    window.onload = resizeIframe;
+    window.onresize = resizeIframe;
+</script>
 </div>
