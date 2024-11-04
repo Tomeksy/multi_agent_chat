@@ -6,7 +6,7 @@
     <title>Chat Widget</title>
 </head>
 <body>
-    <div id="chat-widget-wrapper" style="width: 100%; height: 700px; background: #333333; margin: 0; border-radius: 24px; padding: 10px; display: flex; gap: 20px;">
+    <div id="chat-widget-wrapper" style="width: 100%; min-width: 320px; height: 700px; background: #333333; margin: 0; border-radius: 24px; padding: 10px; display: flex; gap: 20px;">
         <div id="chat-widget" style="flex: 1; background: #d9d9d9; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
             <style>
                 .chat-container {
@@ -293,16 +293,19 @@
         padding: 10px;
         margin: 0;
         width: 95%;
+        max-width: 800px;
     }
     
     .agents-container {
         width: 100%;
         height: auto;
         padding: 0.75rem;
+        max-height: 300px;
     }
 
     #chat-widget {
         width: 100%;
+        max-height: 400px;
     }
 }
             </style>
