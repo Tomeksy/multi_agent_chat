@@ -331,8 +331,11 @@
                     30% { transform: translateY(-4px); }
                 }
 
-                @media (max-width: 1200px) {
-@media (max-width: 1200px) {
+               @media (max-width: 1200px) {
+    body {
+        overflow-x: hidden;
+    }
+    
     #chat-widget-wrapper {
         flex-direction: column;
         height: auto;
@@ -341,6 +344,7 @@
         width: 100%;
         max-width: 100vw;
         gap: 8px;
+        overflow: hidden;
     }
     
     .agents-container {
@@ -349,12 +353,14 @@
         padding: 0.75rem;
         max-height: 300px;
         margin: 0;
+        min-width: unset;
     }
 
     #chat-widget {
         width: 100%;
         min-height: 400px;
         margin: 0;
+        overflow: hidden;
     }
 
     .message {
@@ -363,6 +369,8 @@
 
     .input-area {
         padding: 0.75rem;
+        width: 100%;
+        box-sizing: border-box;
     }
 }
             </style>
@@ -607,20 +615,27 @@
             };
             clearChatButton.onclick = clearChat;
         </script>
-        <script>
-        // Function to calculate and send the height of the content to the parent iframe
-        function resizeIframe() {
-            // Sends a message to the parent iframe with the height of the document content
-            window.parent.postMessage(
-                { iframeHeight: document.documentElement.scrollHeight },
-                '*'
-            );
-        }
+<script>
+    // Function to calculate and send the height of the content to the parent iframe
+    function resizeIframe() {
+        const width = document.documentElement.scrollWidth;
+        // Sends a message to the parent iframe with the dimensions
+        window.parent.postMessage(
+            { 
+                iframeHeight: document.documentElement.scrollHeight,
+                iframeWidth: width
+            },
+            '*'
+        );
+    }
 
-        // Trigger the resize function when the page loads or is resized
-        window.onload = resizeIframe;
-        window.onresize = resizeIframe;
-    </script>
+    // Trigger the resize function when the page loads or is resized
+    window.onload = resizeIframe;
+    window.onresize = resizeIframe;
+    
+    // Additional resize check after a short delay
+    setTimeout(resizeIframe, 100);
+</script>
 </div>
 </body>
 </html>
