@@ -9,358 +9,332 @@
     <div id="chat-widget-wrapper">
     <div id="chat-widget">
             <style>
-    html, body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
-        width: 100%;
-    }
-                body {
-    position: relative;
-    max-width: 100vw;
-}
-
-#chat-widget-wrapper {
-    max-width: 100%;
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
     overflow: hidden;
 }
 
-.agents-container {
-    max-width: 100%;
+#chat-widget-wrapper {
+    width: 100%;
+    height: 100vh;
+    background: #333333;
+    margin: 0;
+    border-radius: 24px;
+    padding: clamp(8px, 2vw, 16px);
+    display: flex;
+    gap: clamp(8px, 2vw, 16px);
+    box-sizing: border-box;
+    min-height: 400px;
+    max-height: 100vh;
 }
 
-    * {
-        box-sizing: border-box;
-    }
-
-    #chat-widget-wrapper {
-        width: 100%;
-        min-width: 320px;
-        height: 700px;
-        background: #333333;
-        margin: 0;
-        border-radius: 24px;
-        padding: 10px;
-        display: flex;
-        gap: 10px;
-        box-sizing: border-box;
-    }
-                #chat-widget {
+#chat-widget {
     flex: 1;
     background: #d9d9d9;
     border-radius: 16px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    box-sizing: border-box;
+    min-width: 0;
 }
-                .chat-container {
-                    flex: 1;
-                    display: flex;
-                    flex-direction: column;
-                    background: #d9d9d9;
-                }
 
-                .chat-header {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    padding: 1.25rem;
-                    background: rgba(0, 0, 0, 0.05);
-                    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-                }
+.chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #d9d9d9;
+    min-height: 0;
+}
 
-                .chat-header-title {
-                    color: #333;
-                    font-size: 1.15rem;
-                    font-weight: 600;
-                    letter-spacing: 0.3px;
-                }
+.chat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    background: rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
 
-                .messages-area {
-                    flex: 1;
-                    overflow-y: auto;
-                    padding: 1.25rem;
-                    scroll-behavior: smooth;
-                    background: transparent;
-                }
+.chat-header-title {
+    color: #333;
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
 
-                .messages-area::-webkit-scrollbar {
-                    width: 6px;
-                }
+.messages-area {
+    flex: 1;
+    overflow-y: auto;
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    scroll-behavior: smooth;
+    background: transparent;
+    min-height: 0;
+}
 
-                .messages-area::-webkit-scrollbar-track {
-                    background: rgba(0, 0, 0, 0.05);
-                    border-radius: 3px;
-                }
+.messages-area::-webkit-scrollbar {
+    width: 6px;
+}
 
-                .messages-area::-webkit-scrollbar-thumb {
-                    background: rgba(0, 0, 0, 0.2);
-                    border-radius: 3px;
-                }
+.messages-area::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 3px;
+}
 
-                .message {
-                    padding: 1rem;
-                    border-radius: 12px;
-                    margin-bottom: 1rem;
-                    max-width: 80%;
-                    word-wrap: break-word;
-                    animation: fadeIn 0.3s ease-in;
-                    position: relative;
-                    line-height: 1.5;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-                }
+.messages-area::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 3px;
+}
 
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: translateY(8px); }
-                    to { opacity: 1; transform: translateY(0); }
-                }
+.message {
+    padding: clamp(0.75rem, 2vw, 1rem);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    max-width: 85%;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease-in;
+    position: relative;
+    line-height: 1.5;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-size: clamp(0.875rem, 2vw, 1rem);
+}
 
-                .message.user {
-                    background: linear-gradient(145deg, #2c2c2c, #333333);
-                    margin-left: auto;
-                    color: #fff;
-                    border: 1px solid rgba(255, 255, 255, 0.05);
-                }
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
-                .message.ai {
-                    background: linear-gradient(145deg, #0ABE76, #09a868);
-                    color: white;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                }
+.message.user {
+    background: linear-gradient(145deg, #2c2c2c, #333333);
+    margin-left: auto;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
 
-                .message .timestamp {
-                    font-size: 0.75rem;
-                    opacity: 0.7;
-                    position: absolute;
-                    bottom: -1.4rem;
-                    right: 0.5rem;
-                    color: #666;
-                }
+.message.ai {
+    background: linear-gradient(145deg, #0ABE76, #09a868);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
 
-                .input-area {
-                    padding: 1.25rem;
-                    display: flex;
-                    gap: 0.75rem;
-                    background: rgba(0, 0, 0, 0.05);
-                    border-top: 1px solid rgba(0, 0, 0, 0.1);
-                }
+.message .timestamp {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    position: absolute;
+    bottom: -1.4rem;
+    right: 0.5rem;
+    color: #666;
+}
 
-                .message-input {
-                    flex: 1;
-                    padding: 1rem 1.25rem;
-                    border-radius: 12px;
-                    background: white;
-                    color: #333;
-                    border: 1px solid rgba(0, 0, 0, 0.1);
-                    font-size: 0.95rem;
-                    resize: none;
-                    min-height: 48px;
-                    max-height: 120px;
-                    transition: all 0.2s ease;
-                }
+.input-area {
+    padding: clamp(0.75rem, 2vw, 1.25rem);
+    display: flex;
+    gap: clamp(0.5rem, 1vw, 0.75rem);
+    background: rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
 
-                .message-input:focus {
-                    outline: none;
-                    border-color: #0ABE76;
-                    box-shadow: 0 0 0 2px rgba(10, 190, 118, 0.1);
-                }
+.message-input {
+    flex: 1;
+    padding: clamp(0.75rem, 2vw, 1rem);
+    border-radius: 12px;
+    background: white;
+    color: #333;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    font-size: clamp(0.875rem, 2vw, 0.95rem);
+    resize: none;
+    min-height: 48px;
+    max-height: 120px;
+    transition: all 0.2s ease;
+}
 
-                .message-input::placeholder {
-                    color: #666;
-                }
+.message-input:focus {
+    outline: none;
+    border-color: #0ABE76;
+    box-shadow: 0 0 0 2px rgba(10, 190, 118, 0.1);
+}
 
-                .send-button {
-                    padding: 0 1.5rem;
-                    background: linear-gradient(145deg, #0ABE76, #09a868);
-                    border: none;
-                    border-radius: 12px;
-                    color: white;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    font-weight: 500;
-                    box-shadow: 0 2px 8px rgba(10, 190, 118, 0.2);
-                }
+.message-input::placeholder {
+    color: #666;
+}
 
-                .send-button:hover:not(:disabled) {
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(10, 190, 118, 0.3);
-                }
+.send-button {
+    padding: 0 1.5rem;
+    background: linear-gradient(145deg, #0ABE76, #09a868);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(10, 190, 118, 0.2);
+}
 
-                .send-button:disabled {
-                    background: linear-gradient(145deg, #ccc, #d4d4d4);
-                    cursor: not-allowed;
-                    box-shadow: none;
-                    color: #666;
-                }
+.send-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(10, 190, 118, 0.3);
+}
 
-                .clear-chat {
-                    background: white;
-                    border: 1px solid rgba(0, 0, 0, 0.1);
-                    color: #666;
-                    cursor: pointer;
-                    font-size: 0.9rem;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.4rem;
-                    padding: 0.5rem 0.75rem;
-                    border-radius: 8px;
-                    transition: all 0.2s ease;
-                }
+.send-button:disabled {
+    background: linear-gradient(145deg, #ccc, #d4d4d4);
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #666;
+}
 
-                .clear-chat:hover {
-                    background: rgba(0, 0, 0, 0.05);
-                    color: #333;
-                    transform: translateY(-1px);
-                }
+.clear-chat {
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    color: #666;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
 
-                .agents-container {
-                    width: 250px;
-                    min-width: 200px;
-                    background: #d9d9d9;
-                    border-radius: 16px;
-                    padding: 1rem;
-                    display: flex;
-                    flex-direction: column;
-                }
+.clear-chat:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: #333;
+    transform: translateY(-1px);
+}
 
-                .agents-title {
-                    font-size: 1.15rem;
-                    margin-bottom: 1.25rem;
-                    color: #333;
-                    font-weight: 600;
-                    display: flex;
-                    align-items: center;
-                    gap: 0.75rem;
-                    letter-spacing: 0.3px;
-                }
+.agents-container {
+    width: clamp(200px, 25%, 250px);
+    background: #d9d9d9;
+    border-radius: 16px;
+    padding: clamp(0.75rem, 2vw, 1rem);
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+}
 
-                .agents-title .agent-count {
-                    font-size: 0.8rem;
-                    background: rgba(0, 0, 0, 0.1);
-                    padding: 0.3rem 0.8rem;
-                    border-radius: 1rem;
-                    font-weight: normal;
-                    color: #666;
-                }
+.agents-title {
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    margin-bottom: 1.25rem;
+    color: #333;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    letter-spacing: 0.3px;
+}
 
-                #agentsList {
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.75rem;
-                }
+.agents-title .agent-count {
+    font-size: 0.8rem;
+    background: rgba(0, 0, 0, 0.1);
+    padding: 0.3rem 0.8rem;
+    border-radius: 1rem;
+    font-weight: normal;
+    color: #666;
+}
 
-                .agent-button {
-                    width: 100%;
-                    padding: 1.25rem;
-                    background: white;
-                    border: 1px solid rgba(0, 0, 0, 0.1);
-                    border-radius: 12px;
-                    color: #333;
-                    text-align: left;
-                    cursor: pointer;
-                    transition: all 0.2s ease;
-                    display: flex;
-                    flex-direction: column;
-                    gap: 0.4rem;
-                }
+#agentsList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
 
-                .agent-button .agent-name {
-                    font-weight: 600;
-                    font-size: 1rem;
-                    letter-spacing: 0.3px;
-                }
+.agent-button {
+    width: 100%;
+    padding: 1.25rem;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    color: #333;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
 
-                .agent-button .agent-status {
-                    font-size: 0.85rem;
-                    color: #666;
-                }
+.agent-button .agent-name {
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.3px;
+}
 
-                .agent-button:hover {
-                    background: rgba(255, 255, 255, 0.9);
-                    transform: translateY(-2px);
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-                }
+.agent-button .agent-status {
+    font-size: 0.85rem;
+    color: #666;
+}
 
-                .agent-button.selected {
-                    background: linear-gradient(145deg, #0ABE76, #09a868);
-                    border-color: rgba(255, 255, 255, 0.1);
-                    box-shadow: 0 4px 16px rgba(10, 190, 118, 0.25);
-                    color: white;
-                }
+.agent-button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
 
-                .agent-button.selected .agent-status {
-                    color: rgba(255, 255, 255, 0.8);
-                }
+.agent-button.selected {
+    background: linear-gradient(145deg, #0ABE76, #09a868);
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 16px rgba(10, 190, 118, 0.25);
+    color: white;
+}
 
-                .typing-indicator {
-                    display: inline-flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                    padding: 0.75rem 1.25rem;
-                    background: white;
-                    border: 1px solid rgba(0, 0, 0, 0.1);
-                    border-radius: 12px;
-                    margin-bottom: 1rem;
-                    color: #666;
-                    font-size: 0.9rem;
-                    animation: fadeIn 0.3s ease-in;
-                }
+.agent-button.selected .agent-status {
+    color: rgba(255, 255, 255, 0.8);
+}
 
-                .typing-indicator .dots {
-                    display: flex;
-                    gap: 0.3rem;
-                }
+.typing-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    color: #666;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease-in;
+}
 
-                .typing-indicator .dot {
-                    width: 5px;
-                    height: 5px;
-                    background: #666;
-                    border-radius: 50%;
-                    animation: bounce 1.4s infinite;
-                }
+.typing-indicator .dots {
+    display: flex;
+    gap: 0.3rem;
+}
 
-                .typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
-                .typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
+.typing-indicator .dot {
+    width: 5px;
+    height: 5px;
+    background: #666;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite;
+}
 
-                @keyframes bounce {
-                    0%, 60%, 100% { transform: translateY(0); }
-                    30% { transform: translateY(-4px); }
-                }
+.typing-indicator .dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-indicator .dot:nth-child(3) { animation-delay: 0.4s; }
 
-               @media (max-width: 1200px) {
-    body {
-        overflow-x: hidden;
-    }
-    
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-4px); }
+}
+
+@media (max-width: 768px) {
     #chat-widget-wrapper {
         flex-direction: column;
         height: auto;
-        padding: 8px;
-        margin: 0;
-        width: 100%;
-        max-width: 100vw;
-        gap: 8px;
-        overflow: hidden;
-    }
-    
-    .agents-container {
-        width: 100%;
-        height: auto;
-        padding: 0.75rem;
-        max-height: 300px;
-        margin: 0;
-        min-width: unset;
+        min-height: 100vh;
     }
 
-    #chat-widget {
+    .agents-container {
         width: 100%;
-        min-height: 400px;
-        margin: 0;
-        overflow: hidden;
+        max-height: 30vh;
+    }
+
+    .chat-container {
+        height: 70vh;
     }
 
     .message {
@@ -369,8 +343,6 @@
 
     .input-area {
         padding: 0.75rem;
-        width: 100%;
-        box-sizing: border-box;
     }
 }
             </style>
@@ -618,23 +590,32 @@
 <script>
     // Function to calculate and send the height of the content to the parent iframe
     function resizeIframe() {
+        const wrapper = document.getElementById('chat-widget-wrapper');
         const width = document.documentElement.scrollWidth;
-        // Sends a message to the parent iframe with the dimensions
+        
+        // Adjust wrapper height based on available space
+        wrapper.style.height = `${Math.min(700, document.documentElement.scrollHeight)}px`;
+        
+        // Send dimensions to parent
         window.parent.postMessage(
             { 
-                iframeHeight: document.documentElement.scrollHeight,
+                iframeHeight: wrapper.offsetHeight,
                 iframeWidth: width
             },
             '*'
         );
     }
 
-    // Trigger the resize function when the page loads or is resized
+    // Call resize on important events
     window.onload = resizeIframe;
     window.onresize = resizeIframe;
-    
-    // Additional resize check after a short delay
     setTimeout(resizeIframe, 100);
+
+    // Add resize observer for dynamic content changes
+    const resizeObserver = new ResizeObserver(entries => {
+        resizeIframe();
+    });
+    resizeObserver.observe(document.body);
 </script>
 </div>
 </body>
