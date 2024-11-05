@@ -6,9 +6,41 @@
     <title>Chat Widget</title>
 </head>
 <body>
-    <div id="chat-widget-wrapper" style="width: 100%; min-width: 320px; height: 700px; background: #333333; margin: 0; border-radius: 24px; padding: 10px; display: flex; gap: 20px;">
-        <div id="chat-widget" style="flex: 1; background: #d9d9d9; border-radius: 16px; overflow: hidden; display: flex; flex-direction: column;">
+    <div id="chat-widget-wrapper">
+    <div id="chat-widget">
             <style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+        width: 100%;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
+    #chat-widget-wrapper {
+        width: 100%;
+        min-width: 320px;
+        height: 700px;
+        background: #333333;
+        margin: 0;
+        border-radius: 24px;
+        padding: 10px;
+        display: flex;
+        gap: 10px;
+        box-sizing: border-box;
+    }
+                #chat-widget {
+    flex: 1;
+    background: #d9d9d9;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+}
                 .chat-container {
                     flex: 1;
                     display: flex;
